@@ -1,0 +1,9 @@
+
+# ignore source dir
+src/
+
+# ignore pkg dir
+pkg/
+
+#ignore package files
+*.tar.*

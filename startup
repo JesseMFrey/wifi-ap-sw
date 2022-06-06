@@ -1,0 +1,28 @@
+#!/bin/bash
+
+swval=$(gpioget gpiochip3 20)
+
+if [ "$swval" = "1" ]; then 
+    #Access Point mode
+    echo "Setting up access point"
+
+    #bring wlan0 down
+    /usr/sbin/ip link set dev wlan0 down
+    #flush addresses
+    /usr/sbin/ip addr flush dev wlan0
+
+    #start link layer
+    systemctl start hostapd.service
+    #setup dhcp/dns server
+    systemctl    start dnsmasq.service
+
+    #Setup wlan0 
+    /usr/sbin/ip addr add 192.168.6.1/24 dev wlan0 brd + dev wlan0
+
+elif [ "$swval" = "0" ]; then
+    #Join existing mode
+    echo "starting netctl-auto@wlan0"
+    systemctl start netctl-auto@wlan0.service
+else
+    echo "Error : Could not read gpio pin"
+fi
